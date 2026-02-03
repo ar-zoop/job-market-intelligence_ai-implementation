@@ -1,60 +1,8 @@
-
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain.agents import create_agent
-from langchain_core.messages import SystemMessage
 import os
 
-load_dotenv()
+from analyzer import analyze_job_description
 
-
-llm = ChatOpenAI(
-    model="deepseek-chat",
-    api_key=os.environ.get('OPENAI_API_KEY'),
-    base_url="https://api.deepseek.com"
-)
-
-system_prompt = SystemMessage(
-    content= """
-You are a senior technical recruiter with backend engineering experience.
-
-Your task is to analyze a job description and convert it into a structured JSON object.
-
-Rules:
-- Infer the TRUE nature of the role based on responsibilities, not just the title.
-- If AI/ML is mentioned but responsibilities do NOT include model training, evaluation, or experimentation, classify the role as "ai-adjacent".
-- If the role involves designing, training, evaluating, or researching machine learning models
-  (including algorithms, deep learning architectures, hyperparameter tuning, or mathematical foundations),
-  classify the role as "ai" (core AI), NOT "ai-adjacent".
-- Core AI ownership always overrides backend, platform, or infrastructure responsibilities.
-- Classify the roles based on the responsibilities and required skills.
-- Mark skills as "required" ONLY if they are central to the responsibilities.
-- If experience requirements are inflated or inconsistent with responsibilities, downgrade them.
-- Do not invent skills that are not present in the text.
-- If the required years of experience is given as a range, take the lower bound.
-- Skills mentioned as "exposure" or examples should be treated as nice-to-have, not required.
-- Do NOT invent or infer authoritative identifiers. If a job ID is not explicitly present, generate a simple, human-readable slug and treat it as a non-authoritative identifier. It should contain the company name + location + role (e.g., "lyzr-bengaluru-backend-engineer"). 
-- Seniority must be derived primarily from explicit years-of-experience requirements.
-- If experience is 1–3 years, classify the role as "junior" unless leadership or ownership is explicitly stated.
-- If experience is 0-1 years, classify the role as "entry-level".
-- Ignore internal level labels (e.g., L3, L4, L5) unless clearly mapped to years of experience.
-- Output must strictly follow the provided JSON schema.
-- Output ONLY valid JSON. No explanations.
-"""
-)
-
-SCHEMA = """
-{
-  "job_id": "string",
-  "role_type": "backend | ai-adjacent | infra | platform",
-  "seniority": "junior | mid | senior",
-  "required_experience_years": "number",
-  "required_skills": ["string"],
-  "programming_languages": ["string"],
-  "nice_to_have_skills": ["string"],
-  "domain": "string"
-}
-"""
+os.makedirs("jds", exist_ok=True)
 
 JOB_DESCRIPTION = """
 Location: Bengaluru / Hybrid
@@ -119,18 +67,11 @@ Total ownership and autonomy — no micromanagement
 """
 
 
-user_prompt = "Convert the following job description into JSON using this schema: " + SCHEMA + " Job Description: " + JOB_DESCRIPTION
+response = analyze_job_description(JOB_DESCRIPTION)
+print(response)
+with open("jds/jd_1.json", "w+") as f:
+    f.write(response)
 
-
-response = llm.invoke([
-    system_prompt,
-    {
-        "role": "user",
-        "content": user_prompt
-    }
-])
-
-print(response.content)
 
 
 JOB_DESCRIPTION_2 = """
@@ -173,17 +114,10 @@ Knowledge and Skills:
 • Provide technical leadership, mentorship, and guidance to junior team members. Must have excellent communication skills to collaborate with cross-functional teams and stakeholders effectively. Possess strong problem-solving and critical thinking abilities to guide projects, make strategic decisions, and solve complex technical challenges.
 """
 
-user_prompt = "Convert the following job description into JSON using this schema: " + SCHEMA + " Job Description: " + JOB_DESCRIPTION_2
+response = analyze_job_description(JOB_DESCRIPTION_2)
+print(response)
+with open("jds/jd_2.json", "w+") as f:
+    f.write(response)
 
-
-response = llm.invoke([
-    system_prompt,
-    {
-        "role": "user",
-        "content": user_prompt
-    }
-])
-
-print(response.content)
 
 
