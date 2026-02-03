@@ -75,7 +75,7 @@ with open("jds/jd_1.json", "w+") as f:
 
 
 JOB_DESCRIPTION_2 = """
-This role has been designed as ‘Hybrid’ with an expectation that you will work on average 2 days per week from an HPE office.
+This role has been designed as "Hybrid" with an expectation that you will work on average 2 days per week from an HPE office.
 
 Who We Are:
 
