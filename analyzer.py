@@ -6,7 +6,7 @@ import os
 
 load_dotenv()
 
-SCHEMA = """
+JOB_DESCRIPTION_SCHEMA = """
 {
   "job_id": "string",
   "role_type": "backend | ai-adjacent | infra | platform",
@@ -19,7 +19,7 @@ SCHEMA = """
 }
 """
 
-SYSTEM_PROMPT = SystemMessage(
+JOB_DESCRIPTION_SYSTEM_PROMPT = SystemMessage(
     content="""
 You are a senior technical recruiter with backend engineering experience.
 
@@ -58,6 +58,40 @@ def get_llm():
     )
 
 
+RESUME_SCHEMA = """
+{
+  "experience_years": "number",
+  "skills": ["string"]
+  "role_type": ["backend | ai-adjacent | infra | platform"]
+}
+"""
+
+RESUME_SYSTEM_PROMPT = SystemMessage(
+    content="""
+You are a senior technical recruiter with backend engineering experience.
+
+Your task is to analyze a resume and convert it into a structured JSON object.
+
+Rules:
+- Calculate total years of experience from all work experience listed in the resume.
+- Infer seniority based on total years of experience and responsibilities:
+  - 0-2 years: "junior"
+  - 3-5 years: "mid"
+  - 6+ years: "senior"
+- Extract all technical skills mentioned in the resume (tools, frameworks, technologies, programming languages).
+- Infer role types based on work experience and responsibilities:
+  - "backend" if they've worked on backend services, APIs, microservices
+  - "ai-adjacent" if they've worked with AI/ML tools (including if they've designed, trained, or evaluated ML models - use "ai-adjacent" to match job description schema)
+  - "infra" if they've worked on infrastructure, DevOps, cloud infrastructure
+  - "platform" if they've worked on platform engineering, developer tools, internal platforms
+- Only include skills that are explicitly mentioned or clearly inferable from the resume.
+- Do not invent skills or experiences that are not present in the text.
+- Output must strictly follow the provided JSON schema.
+- Output ONLY valid JSON. No explanations.
+"""
+)
+
+
 def analyze_job_description(job_description: str) -> str:
     """
     Analyze a job description and return structured JSON.
@@ -71,13 +105,39 @@ def analyze_job_description(job_description: str) -> str:
     llm = get_llm()
     user_prompt = (
         "Convert the following job description into JSON using this schema: "
-        + SCHEMA
+        + JOB_DESCRIPTION_SCHEMA
         + " Job Description: "
         + job_description
     )
     response = llm.invoke(
         [
-            SYSTEM_PROMPT,
+            JOB_DESCRIPTION_SYSTEM_PROMPT,
+            {"role": "user", "content": user_prompt},
+        ]
+    )
+    return response.content
+
+
+def analyze_resume(resume_text: str) -> str:
+    """
+    Analyze a resume and return structured JSON comparable to job descriptions.
+
+    Args:
+        resume_text: Raw resume text.
+
+    Returns:
+        JSON string of the analyzed resume structure.
+    """
+    llm = get_llm()
+    user_prompt = (
+        "Convert the following resume into JSON using this schema: "
+        + RESUME_SCHEMA
+        + " Resume: "
+        + resume_text
+    )
+    response = llm.invoke(
+        [
+            RESUME_SYSTEM_PROMPT,
             {"role": "user", "content": user_prompt},
         ]
     )

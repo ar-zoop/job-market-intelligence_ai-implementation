@@ -4,7 +4,7 @@ from analyzer import analyze_job_description
 
 os.makedirs("jds", exist_ok=True)
 
-JOB_DESCRIPTION = """
+SAMPLE_JOB_DESCRIPTION_1 = """
 Location: Bengaluru / Hybrid
 
 Experience: 1–3 years
@@ -114,10 +114,10 @@ Knowledge and Skills:
 • Provide technical leadership, mentorship, and guidance to junior team members. Must have excellent communication skills to collaborate with cross-functional teams and stakeholders effectively. Possess strong problem-solving and critical thinking abilities to guide projects, make strategic decisions, and solve complex technical challenges.
 """
 
-response = analyze_job_description(JOB_DESCRIPTION_2)
-print(response)
+analysis_result = analyze_job_description(SAMPLE_JOB_DESCRIPTION_2)
+print(analysis_result)
 with open("jds/jd_2.json", "w+") as f:
-    f.write(response)
+    f.write(analysis_result)
 
 
 
