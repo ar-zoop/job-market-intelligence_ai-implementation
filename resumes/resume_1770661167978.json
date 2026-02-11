@@ -1,0 +1,3 @@
+{
+  "raw": "```json\n{\n    \"experience_years\": 1,\n    \"skills\": [\"Java\", \"JavaScript\", \"C++\", \"Vert.x\", \"Spring Boot\", \"Node.js\", \"Express\", \"MySQL\", \"PostgreSQL\", \"Cassandra\", \"Couchbase\", \"Redis\", \"REST APIs\", \"Postman\", \"Git\", \"Kafka\", \"Docker\", \"Redis data structures\", \"GitHub Copilot\", \"distributed locking\", \"pub-sub systems\", \"message queues\", \"rate limiting\", \"SQL/NoSQL\", \"Python\", \"LLM\", \"Generative AI\", \"Large Language Models\"],\n    \"role_type\": [\"backend\", \"ai-adjacent\"]\n}\n```"
+}

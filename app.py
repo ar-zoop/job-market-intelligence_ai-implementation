@@ -43,10 +43,15 @@ def analyze_job():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+    # If the model returned valid JSON, return it *verbatim* so the API caller
+    # receives the exact object string (no re-serialization / key reordering).
     try:
         parsed = json.loads(result_content)
     except json.JSONDecodeError:
         parsed = {"raw": result_content}
+        parsed_is_valid_json = False
+    else:
+        parsed_is_valid_json = True
 
     save = data.get("save", False)
     if save:
@@ -59,7 +64,9 @@ def analyze_job():
                 else result_content
             )
 
-    return jsonify({"result": parsed})
+    if parsed_is_valid_json:
+        return app.response_class(result_content, mimetype="application/json")
+    return jsonify(parsed)
 
 
 @app.route("/analyze-resume", methods=["POST"])
@@ -89,10 +96,15 @@ def analyze_resume_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+    # If the model returned valid JSON, return it *verbatim* so the API caller
+    # receives the exact object string (no re-serialization / key reordering).
     try:
         parsed_result = json.loads(raw_analysis_result)
     except json.JSONDecodeError:
         parsed_result = {"raw": raw_analysis_result}
+        parsed_is_valid_json = False
+    else:
+        parsed_is_valid_json = True
 
     save = data.get("save", False)
     if save:
@@ -105,7 +117,9 @@ def analyze_resume_endpoint():
                 else raw_analysis_result
             )
 
-    return jsonify({"result": parsed_result})
+    if parsed_is_valid_json:
+        return app.response_class(raw_analysis_result, mimetype="application/json")
+    return jsonify(parsed_result)
 
 
 if __name__ == "__main__":

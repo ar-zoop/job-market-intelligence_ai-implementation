@@ -1,0 +1,43 @@
+{
+  "job_id": "hpe-hybrid-ai-research-engineer",
+  "role_type": "ai",
+  "seniority": "senior",
+  "required_experience_years": 5,
+  "required_skills": [
+    "machine learning algorithms",
+    "deep learning models",
+    "neural network architectures",
+    "model selection",
+    "hyperparameter tuning",
+    "model evaluation",
+    "mathematics",
+    "statistics",
+    "linear algebra",
+    "calculus",
+    "probability theory",
+    "AI solution architecture",
+    "agentic frameworks",
+    "langGraph",
+    "lineage tracking",
+    "langfuse",
+    "langsmith",
+    "technical leadership",
+    "mentorship",
+    "research",
+    "stakeholder collaboration"
+  ],
+  "programming_languages": [
+    "Python",
+    "R",
+    "Java"
+  ],
+  "nice_to_have_skills": [
+    "TensorFlow",
+    "PyTorch",
+    "scikit-learn",
+    "Keras",
+    "Git",
+    "software engineering best practices"
+  ],
+  "domain": "AI/ML Research and Development"
+}

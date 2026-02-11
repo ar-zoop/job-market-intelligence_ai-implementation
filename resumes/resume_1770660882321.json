@@ -1,0 +1,36 @@
+{
+  "experience_years": 0,
+  "skills": [
+    "Java",
+    "JavaScript",
+    "C++",
+    "Vert.x",
+    "Spring Boot",
+    "Node.js",
+    "Express",
+    "MySQL",
+    "PostgreSQL",
+    "Cassandra",
+    "Couchbase",
+    "Redis",
+    "REST APIs",
+    "Postman",
+    "Git",
+    "Kafka",
+    "Docker",
+    "GitHub Copilot",
+    "Python",
+    "SQL",
+    "NoSQL",
+    "distributed locking",
+    "pub-sub systems",
+    "message queues",
+    "rate limiting",
+    "LLM",
+    "Generative AI"
+  ],
+  "role_type": [
+    "backend",
+    "ai-adjacent"
+  ]
+}

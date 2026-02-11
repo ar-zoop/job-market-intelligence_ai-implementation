@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage
 import os
+import re
 
 load_dotenv()
 
@@ -45,6 +46,7 @@ Rules:
 - Ignore internal level labels (e.g., L3, L4, L5) unless clearly mapped to years of experience.
 - Output must strictly follow the provided JSON schema.
 - Output ONLY valid JSON. No explanations.
+- RETURN ONLY RAW JSON WITHOUT MARKDOWN FORMATTING.
 """
 )
 
@@ -62,7 +64,7 @@ RESUME_SCHEMA = """
 {
   "experience_years": "number",
   "skills": ["string"]
-  "role_type": ["backend | ai-adjacent | infra | platform"]
+  "role_type": "backend | ai-adjacent | infra | platform"
 }
 """
 
@@ -70,7 +72,7 @@ RESUME_SYSTEM_PROMPT = SystemMessage(
     content="""
 You are a senior technical recruiter with backend engineering experience.
 
-Your task is to analyze a resume and convert it into a structured JSON object.
+Your task is to analyze a resume description and convert it into a structured JSON object.
 
 Rules:
 - Calculate total years of experience from all work experience listed in the resume.
@@ -79,15 +81,18 @@ Rules:
   - 3-5 years: "mid"
   - 6+ years: "senior"
 - Extract all technical skills mentioned in the resume (tools, frameworks, technologies, programming languages).
-- Infer role types based on work experience and responsibilities:
+- Infer role type based on work experience and responsibilities:
   - "backend" if they've worked on backend services, APIs, microservices
   - "ai-adjacent" if they've worked with AI/ML tools (including if they've designed, trained, or evaluated ML models - use "ai-adjacent" to match job description schema)
   - "infra" if they've worked on infrastructure, DevOps, cloud infrastructure
   - "platform" if they've worked on platform engineering, developer tools, internal platforms
+  - refer the closest match from the job description schema.
+  - refer ONLY ONE role type from the job description schema.
 - Only include skills that are explicitly mentioned or clearly inferable from the resume.
 - Do not invent skills or experiences that are not present in the text.
 - Output must strictly follow the provided JSON schema.
 - Output ONLY valid JSON. No explanations.
+- RETURN ONLY RAW JSON WITHOUT MARKDOWN FORMATTING.
 """
 )
 
@@ -115,8 +120,11 @@ def analyze_job_description(job_description: str) -> str:
             {"role": "user", "content": user_prompt},
         ]
     )
-    return response.content
-
+    content = response.content
+    match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", content)
+    if match:
+        return match.group(1).strip()
+    return content.strip()
 
 def analyze_resume(resume_text: str) -> str:
     """
@@ -128,17 +136,27 @@ def analyze_resume(resume_text: str) -> str:
     Returns:
         JSON string of the analyzed resume structure.
     """
-    llm = get_llm()
-    user_prompt = (
-        "Convert the following resume into JSON using this schema: "
-        + RESUME_SCHEMA
-        + " Resume: "
-        + resume_text
-    )
-    response = llm.invoke(
-        [
-            RESUME_SYSTEM_PROMPT,
-            {"role": "user", "content": user_prompt},
-        ]
-    )
-    return response.content
+    try:
+        llm = get_llm()
+        user_prompt = (
+            "Convert the following resume into JSON using this schema: "
+            + RESUME_SCHEMA
+            + " Resume: "
+            + resume_text
+        )
+        response = llm.invoke(
+            [
+                RESUME_SYSTEM_PROMPT,
+                {"role": "user", "content": user_prompt},
+            ]
+        )
+        content = response.content
+        match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", content)
+        if match:
+            print(match.group(1).strip())
+            return match.group(1).strip()
+        print(content.strip())
+        return content.strip()
+    except Exception as e:
+        print(e)
+        return None
