@@ -1,0 +1,17 @@
+{
+  "job_id": "job_1",
+  "role_type": "backend",
+  "seniority": "mid",
+  "required_experience_years": 0,
+  "required_skills": [
+    "java",
+    "rest"
+  ],
+  "programming_languages": [
+    "java"
+  ],
+  "nice_to_have_skills": [
+    "docker"
+  ],
+  "domain": "backend"
+}
