@@ -31,6 +31,8 @@ Response:
 Optional persistence:
 - If `"save": true`, the server saves the parsed output to **`jds/jd_<timestamp>.json`**.
 
+<img width="3200" height="1904" alt="image" src="https://github.com/user-attachments/assets/777e7118-ac49-445d-86fe-1e42f59a4941" />
+
 ### Local script runner (examples)
 - **`jd.py`**: sample script that calls `analyze_job_description()` for two in-file job descriptions and writes outputs to:
   - `jds/jd_1.json`
